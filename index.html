@@ -42,7 +42,6 @@
             box-shadow: 0 0 120px rgba(0, 255, 255, 0.35), 0 0 160px rgba(0, 255, 255, 0.2);
         }
 
-
         .fancy-button {
             background: linear-gradient(to right, #4ade80, #22d3ee);
             color: black;
@@ -94,7 +93,6 @@
             animation: pulseClick 0.4s ease;
         }
 
-
         .animate-burst {
             animation: burst 1s ease-out forwards;
             transform-origin: center;
@@ -116,63 +114,67 @@
                     <p class="text-sm text-gray-400">@naval</p>
                 </div>
             </div>
+
+            <div id="loading" class="text-xl text-cyan-300 animate-pulse mb-2 hidden">
+                Loading quote...
+            </div>
+
             <p id="quote"
                 class="text-2xl leading-relaxed text-gray-100 italic transition-opacity duration-500 ease-in-out">
-
                 Loading...
             </p>
-
         </div>
 
         <button id="new-quote"
             class="fancy-button px-10 py-4 rounded-full text-xl active:scale-95 active:ring-4 active:ring-cyan-400/40 transition-all duration-150">
             ✨ Inspire Me
         </button>
-
     </div>
 
     <div id="emoji-container" class="fixed inset-0 pointer-events-none z-50"></div>
 
     <script>
         const quoteEl = document.getElementById("quote");
+        const loadingEl = document.getElementById("loading");
         const button = document.getElementById("new-quote");
         const emojiContainer = document.getElementById("emoji-container");
         const emojis = [
             "✨", "💡", "🚀", "🧠", "🔥", "🌈", "🌟", "💭", "📈", "🎯", "🎉", "🦾", "🧘‍♂️",
             "🪄", "📚", "🕊️", "🧩", "💎", "🌌", "⚡", "📖", "🏆", "🔮", "☀️", "🧭"
         ];
+
         async function getQuote() {
-            quoteEl.classList.add("opacity-0"); // start fading out
+            quoteEl.classList.add("hidden");
+            loadingEl.classList.remove("hidden");
+
             try {
-                const res = await fetch("http://localhost:3000/quotes/random");
+                const res = await fetch("https://navalquotes.onrender.com/quotes/random");
                 const data = await res.json();
 
                 setTimeout(() => {
-                    quoteEl.textContent = data.quote;     // change quote
-                    quoteEl.classList.remove("opacity-0"); // fade in
-                }, 300); // wait for fade-out before changing
+                    quoteEl.textContent = data.quote;
+                    loadingEl.classList.add("hidden");
+                    quoteEl.classList.remove("hidden");
+                }, 300);
             } catch (err) {
                 setTimeout(() => {
                     quoteEl.textContent = "Failed to fetch quote 😞";
-                    quoteEl.classList.remove("opacity-0");
+                    loadingEl.classList.add("hidden");
+                    quoteEl.classList.remove("hidden");
                 }, 300);
             }
         }
-
 
         function launchEmojiBurst() {
             const emoji = document.createElement("div");
             emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
             emoji.className = "absolute text-4xl animate-burst";
 
-            // Get heading position
             const heading = document.querySelector("h1");
             const rect = heading.getBoundingClientRect();
-
-            // Calculate position ABOVE the heading
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const x = rect.left + rect.width / 2;
-            const y = rect.top + scrollTop - 150; // 50px above the heading
+            const y = rect.top + scrollTop - 150;
 
             emoji.style.left = `${x}px`;
             emoji.style.top = `${y}px`;
@@ -186,16 +188,12 @@
             }, 1000);
         }
 
-
-
         button.addEventListener("click", () => {
             getQuote();
             launchEmojiBurst();
-
             button.classList.add("pulse-click");
             setTimeout(() => button.classList.remove("pulse-click"), 400);
         });
-
 
         getQuote(); // Load initial quote
     </script>
