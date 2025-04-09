@@ -11,3 +11,17 @@ Make sure you have the following installed:
 ```bash
 git clone https://github.com/kartgits/navalquotes.git
 cd navalquotes
+
+```
+## 📦 Install Dependencies
+
+```bash
+npm install
+
+```
+## 🚀 Start the Server
+
+```bash
+npm start
+
+```
